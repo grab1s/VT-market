@@ -80,7 +80,7 @@ local SkyboxDropdown = UI:AddDropdown({
 UI:AddDropdown({
 	Name = "Render Filters",
 	Values = {"Players", "Corpses", "Map Details"},
-	Default = { = true, = false},
+	Default = { ["Players"] = true, ["Corpses"] = false },
 	Multi = true,
 	Callback = function(val)
 	end
