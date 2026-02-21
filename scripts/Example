@@ -1,0 +1,154 @@
+-- docs. rules, example:
+-- https://vantality.github.io/
+
+-- 1. создаём секцию
+local UI = Vantality.CreateSection("TSB VISUALS EXTENSION")
+
+-- 2. параграфы (текст для инфы внутри секции)
+UI:AddParagraph({
+	Title = "Welcome to Vantality API",
+	Content = "этот пример показывает весь функционал API. юзайте GetValue() и SetValue(), чтобы не плодить миллион локальных переменных."
+})
+
+-- 3. текстовое поле (input)
+local SpooferInput = UI:AddInput({
+	Name = "Name Spoofer",
+	PlaceholderText = "введите ник...",
+	Default = "grab1s",
+	Callback = function(text)
+		print(">> новый ник для спуфера:", text)
+	end
+})
+
+-- 4. переключатель (Toggle) и управление (get/set)
+local OverlayToggle = UI:AddToggle({
+	Name = "Screen Overlay",
+	Default = false,
+	Option = true, -- включает доп. меню справа (шестеренку)
+	Risky = true, -- красит текст в оранжевый (типо важная или опасная функция, но реального предназначения я ей не даю, юзайте как вам угодно)
+	Callback = function(state)
+		print("Overlay state:", state)
+	end
+})
+
+-- закидываем доп. настройки ВНУТРЬ тоггла (в шестеренку).
+-- ВАЖНО: всегда чекайте наличие .Option перед добавлением
+if OverlayToggle.Option then
+	OverlayToggle.Option:AddButton({
+		Name = "Force Disable",
+		Callback = function()
+			-- меняем значение.
+			-- второй аргумент (true) триггерит Callback самого тоггла
+			OverlayToggle:SetValue(false, true)
+			OverlayToggle:Rename("Screen Overlay (Off!)")
+		end
+	})
+end
+
+-- 5. слайдеры (int и float)
+local FovSlider = UI:AddSlider({
+	Name = "Camera FOV",
+	Range = {70, 120},
+	Default = 90,
+	Step = 1,
+	Type = "°",
+	Callback = function(val)
+	end
+})
+
+local StretchSlider = UI:AddSlider({
+	Name = "Screen Stretch",
+	Range = {0, 1},
+	Default = 0.5,
+	Precise = 2, -- сколько знаков после запятой (0.50) если 1, то 0.5
+	Callback = function(val)
+	end
+})
+
+-- 6. выпадающий список (dropdown)
+-- обычный выбор одного пункта
+local SkyboxDropdown = UI:AddDropdown({
+	Name = "Custom Sky",
+	Values = {"Night", "Vaporwave", "Blood Moon"},
+	Default = "Night",
+	Multi = false,
+	Callback = function(val)
+	end
+})
+
+-- мульти-выбор (возвращает таблицу {Players = true, Corpses = false})
+UI:AddDropdown({
+	Name = "Render Filters",
+	Values = {"Players", "Corpses", "Map Details"},
+	Default = { = true, = false},
+	Multi = true,
+	Callback = function(val)
+	end
+})
+
+-- 7. цвета и бинды клавиш
+local ArrowColor = UI:AddColorPicker({
+	Name = "Player Arrows Color",
+	Default = Color3.fromRGB(255, 106, 133),
+	Transparency = 0.5, -- поддержка альфа-канала (0-1)
+	Callback = function(color, alpha)
+	end
+})
+
+local CameraStrafeKey = UI:AddKeybind({
+	Name = "Camera Strafe Key",
+	Default = Enum.KeyCode.C,
+	Callback = function(key)
+	end
+})
+
+-- 8. кнопки и система уведомлений
+UI:AddButton({
+	Name = "Apply Visuals",
+	Callback = function()
+		Vantality.Notify({
+			Title = "Visuals Loaded",
+			Content = "визуалы применились",
+			Icon = "check-circle",
+			Duration = 3
+		})
+	end
+})
+
+-- 9. ЛОГИКА (ГЛАВНЫЙ ЦИКЛ)
+-- юзаем :GetValue(), чтобы не срать глобальными переменными в коде скрипта.
+
+Vantality.Bind(game:GetService("RunService").RenderStepped, function(dt)
+	-- читаем актуальное состояние элементов напрямую
+	if OverlayToggle:GetValue() then
+		local sky = SkyboxDropdown:GetValue()
+		local fov = FovSlider:GetValue()
+
+		-- колорпикер возвращает таблицу (цвет + прозрачность)
+		local arrowData = ArrowColor:GetValue()
+		local rgb = arrowData.Color
+		local alpha = arrowData.Transparency
+
+		-- тут ваша математика под тсб (например, апдейт стрелочек на врагов)
+	end
+end)
+
+-- 10. ВЫГРУЗКА (CLEANUP)
+-- API само отрубит коннекты (Bind) и удалит секцию.
+-- НО если вы спавните партиклы, локалпарты (Instance.new) или юзаете Drawing API:
+-- ВЫ ОБЯЗАНЫ УДАЛИТЬ ИХ ТУТ САМИ.
+
+-- пример кастомного объекта:
+local IndicatorText = Drawing.new("Text")
+
+function OnUnload()
+	print(">> script unloaded via API.")
+
+	-- чистим за собой мусор
+	if IndicatorText then
+		IndicatorText:Remove()
+	end
+
+	-- возвращаем стейты игры в исходную
+	-- game.Lighting.FogEnd = 100000
+end
