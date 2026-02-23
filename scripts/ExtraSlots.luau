@@ -8,26 +8,35 @@ UI:AddParagraph({
 	Content = "These features unlock paid game content (Extra Slots and a Second Emotes Page)."
 })
 
-local SlotsToggle = UI:AddButton({
-	Name = "Extra Emote Slots",
-	Callback = function(state)
-		LocalPlayer:SetAttribute("ExtraSlots", state)
+UI:AddButton({
+	Name = "Enable Extra Slots", 
+	Callback = function()
+		LocalPlayer:SetAttribute("ExtraSlots", true)
+		
+		Vantality.Notify({
+			Title = "Success",
+			Content = "Extra Slots включены!",
+			Icon = "check",
+			Duration = 2
+		})
 	end
 })
 
-local SearchToggle = UI:AddButton({
-	Name = "Emote Search Bar",
-	Callback = function(state)
-		LocalPlayer:SetAttribute("EmoteSearchBar", state)
+UI:AddButton({
+	Name = "Enable Search Bar",
+	Callback = function()
+		LocalPlayer:SetAttribute("EmoteSearchBar", true)
+		
+		Vantality.Notify({
+			Title = "Success",
+			Content = "Search Bar включен!",
+			Icon = "check",
+			Duration = 2
+		})
 	end
 })
 
 function OnUnload()
-	print(">> Unloading...")
-
 	LocalPlayer:SetAttribute("ExtraSlots", false)
 	LocalPlayer:SetAttribute("EmoteSearchBar", false)
-	
-	print(">> Attributes reset to false.")
 end
-
