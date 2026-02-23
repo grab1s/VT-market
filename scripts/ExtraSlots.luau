@@ -9,13 +9,13 @@ UI:AddParagraph({
 })
 
 UI:AddButton({
-	Name = "Enable Extra Slots", 
+	Name = "Extra Emotes Slots", 
 	Callback = function()
 		LocalPlayer:SetAttribute("ExtraSlots", true)
 		
 		Vantality.Notify({
 			Title = "Success",
-			Content = "Extra Slots включены!",
+			Content = "Extra Slots",
 			Icon = "check",
 			Duration = 2
 		})
@@ -23,13 +23,13 @@ UI:AddButton({
 })
 
 UI:AddButton({
-	Name = "Enable Search Bar",
+	Name = "Emotes Second Page",
 	Callback = function()
 		LocalPlayer:SetAttribute("EmoteSearchBar", true)
 		
 		Vantality.Notify({
 			Title = "Success",
-			Content = "Search Bar включен!",
+			Content = "Emotes Second Page",
 			Icon = "check",
 			Duration = 2
 		})
@@ -40,3 +40,4 @@ function OnUnload()
 	LocalPlayer:SetAttribute("ExtraSlots", false)
 	LocalPlayer:SetAttribute("EmoteSearchBar", false)
 end
+
